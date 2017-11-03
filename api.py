@@ -6,7 +6,7 @@ import json
 from config import Config
 
 
-def sendMessage(chatID, text, parseMode="HTML", disableWebpagePreview=True, isResponse=False):
+def sendMessage(chatID, text, parseMode="HTML", disableWebpagePreview=True, isReturn=False):
 	if not text:
 		return ""
 	data = {
@@ -15,16 +15,16 @@ def sendMessage(chatID, text, parseMode="HTML", disableWebpagePreview=True, isRe
 		"parse_mode": parseMode,
 		"disable_web_page_preview": disableWebpagePreview
 	}
-	if isResponse:
+	if isReturn:
 		data["method"] = "sendMessage"
 		return json.dumps(data)
 	requests.post(Config.apiURL + "sendMessage", params=data)
 
 
-def sendPhoto(chatID, publicFilename, caption="", disableNotify=False, replyMsgID=None):
+def sendPhoto(chatID, imgURL, caption="", disableNotify=False, replyMsgID=None):
 	data = {
 		"chat_id": chatID,
-		"photo": Config.publicURL + publicFilename,
+		"photo": imgURL,
 		"caption": caption,
 		"disable_notification": disableNotify
 	}

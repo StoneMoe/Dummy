@@ -13,7 +13,7 @@ from config import Config
 from model import Update
 
 app = Flask(__name__)
-app.debug = True
+app.debug = False
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
@@ -39,11 +39,8 @@ print("EventLoop Order: " + ",".join([p.__name__ for p in plugins]))
 
 
 @app.route("/")
-def index():  # We have a XSS here.
-    return """
-<h1 style="color:red">Server Error in "/" Application</h1><br>
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '\"""" + request.headers.get("X-Forwarded-For") + """\")' at line 1
-"""
+def index():
+    return "Running"
 
 
 @app.route(Config.webhookURL, methods=['POST'])
@@ -56,7 +53,7 @@ def webhookEntry():
         else:
             return ""
     except Exception:
-        requestInfo   = json.dumps(json.loads(request.data), indent=4, sort_keys=False).decode("unicode-escape")
+        requestInfo   = json.dumps(json.loads(request.data), indent=4).decode("unicode-escape")
         callstackInfo = traceback.format_exc()
         print requestInfo
         print callstackInfo
@@ -64,7 +61,7 @@ def webhookEntry():
             api.sendMessage(
                 Config.botMasterID,
                 "<strong>Error</strong>\nRaw:\n<code>%s</code>\n\nTraceback:\n<code>%s</code>" % (requestInfo, callstackInfo),
-                isResponse=True),
+                isReturn=True),
             mimetype='application/json')
 
 
@@ -74,9 +71,9 @@ def eventLoop(jraw):
     for plugin in plugins:
         reply = plugin.plugin_main(update)
         if update.handled:
-            return api.sendMessage(update.msg.chat.id, reply, isResponse=True)
+            return api.sendMessage(update.msg.chat.id, reply, isReturn=True)
 
 
 if __name__ == "__main__":
-    print("Starting Flask...")
-    app.run(host='127.0.0.1', port=8081)
+    # app.run(host='127.0.0.1', port=8081)
+    print("Use uWSGI.")
