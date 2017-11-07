@@ -12,7 +12,7 @@ commandReg = {
 
 
 def plugin_load():
-	global commandReg, plt
+	global commandReg
 	commandReg = {name[4:]: getattr(sys.modules[__name__], name) for name in dir(sys.modules[__name__]) if name[:4] == "aux_"}
 
 
