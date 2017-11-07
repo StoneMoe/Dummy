@@ -20,18 +20,19 @@ class DB(object):
 				passwd=self.passwd,
 				db=self.database
 			)
-			self.db = self.conn.cursor()
+			self._cursor = self.conn.cursor()
 		except Exception as e:
 			print("Error occured while connecting to database: " + str(e))
 			raise
 
 	def do(self, sql, param):
 		try:
-			self.db.execute(sql, param)
+			self._cursor.execute(sql, param)
 			self.conn.commit()
 		except Exception as e:
 			print("Error occured while log a update: " + str(e))
-			print(self.db._last_executed)
+			print(self._cursor._last_executed)
+			self.conn.rollback()
 
 
 def randomString(length):
